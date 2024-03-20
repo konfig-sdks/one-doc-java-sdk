@@ -1,0 +1,277 @@
+openapi: 3.0.0
+info:
+  description: "Onedoc is an innovative API solution for developers, offering a simple\
+    \ and secure way to create and manage PDF documents using familiar technologies\
+    \ like React."
+  title: API Doc
+  version: "1.0"
+  x-konfig-has-globally-required-security: true
+servers:
+- url: https://app.onedoclabs.com
+tags:
+- name: Document
+paths:
+  /api/docs/generate:
+    post:
+      description: "This route is responsible for generating a PDF from a bucket.\
+        \  It expects a JSON body with details of the bucket, user credentials, and\
+        \ PDF generation options."
+      operationId: Document_generatePdfFromBucket
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DocumentGeneratePdfFromBucketRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/pdf:
+              schema:
+                $ref: '#/components/schemas/DocumentGeneratePdfFromBucketResponse'
+          description: PDF generated and returned successfully.
+        "400":
+          description: "Bad request, missing or incorrect data."
+        "401":
+          description: "Unauthorized, no API key found or invalid API key."
+        "404":
+          description: Bucket not found.
+        "500":
+          description: Server error or unable to process the request.
+      security:
+      - ApiKeyAuth: []
+      summary: Generates a PDF from a specified bucket.
+      tags:
+      - Document
+      x-konfig-operation-can-have-single-parameter: true
+      x-konfig-single-parameter-schema: konfig-generated-schema-single-parameter-schema-post--api-docs-generate
+      x-content-type: application/json
+      x-accepts: application/pdf
+  /api/docs/initiate:
+    post:
+      description: This endpoint creates a bucket for the html and all specified assets.
+        It returns signed urls to the buckets.
+      operationId: Document_renderingBucket
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DocumentRenderingBucketRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentRenderingBucketResponse'
+          description: Successfully generated and returned signed URLs along with
+            user credentials.
+        "401":
+          description: "Unauthorized, no API key found or invalid API key."
+        "500":
+          description: Server error or unable to process the request.
+      security:
+      - ApiKeyAuth: []
+      summary: Initiates a document's rendering
+      tags:
+      - Document
+      x-konfig-operation-can-have-single-parameter: true
+      x-konfig-single-parameter-schema: konfig-generated-schema-single-parameter-schema-post--api-docs-initiate
+      x-content-type: application/json
+      x-accepts: application/json
+components:
+  schemas:
+    DocumentGeneratePdfFromBucketRequest:
+      example:
+        bucket: bucket
+        expiresIn: 0
+        password: password
+        test: true
+        save: false
+        title: document
+        username: username
+      properties:
+        title:
+          default: document
+          description: "The title of the PDF, defaults to \"document\"."
+          example: document
+          type: string
+          x-konfig-original-example: document
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-DocumentGeneratePdfFromBucketRequest-properties-title
+        bucket:
+          description: The identifier of the bucket.
+          type: string
+        password:
+          description: The password of the bucket.
+          type: string
+        username:
+          description: The username of the bucket.
+          type: string
+        test:
+          default: true
+          description: "Whether or not to generate a test PDF, defaults to true."
+          example: true
+          type: boolean
+          x-konfig-original-example: true
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-DocumentGeneratePdfFromBucketRequest-properties-test
+        save:
+          default: false
+          description: "Whether or not to save the PDF to the bucket, defaults to\
+            \ false."
+          example: false
+          type: boolean
+          x-konfig-original-example: false
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-DocumentGeneratePdfFromBucketRequest-properties-save
+        expiresIn:
+          description: "The expiration time of the PDF in days, default is 1 day."
+          type: integer
+      type: object
+    DocumentRenderingBucketRequest:
+      example:
+        assets:
+        - path: path
+          content: ""
+        - path: path
+          content: ""
+      properties:
+        assets:
+          description: Array of assets to generate signed URLs for.
+          items:
+            $ref: '#/components/schemas/DocumentRenderingBucketRequest_assets_inner'
+          type: array
+      type: object
+    DocumentGeneratePdfFromBucketResponse:
+      format: binary
+      type: string
+      x-konfig-is-used-in-successful-response: true
+    DocumentRenderingBucketResponse:
+      example:
+        bucket: bucket
+        password: password
+        uploadURL: uploadURL
+        signedUrls:
+        - path: path
+          signedUrl: signedUrl
+          token: token
+        - path: path
+          signedUrl: signedUrl
+          token: token
+        username: username
+      properties:
+        uploadURL:
+          description: URL for the upload.
+          type: string
+        username:
+          description: Generated username.
+          type: string
+        password:
+          description: Generated password.
+          type: string
+        bucket:
+          description: Identifier of the bucket.
+          type: string
+        signedUrls:
+          items:
+            $ref: '#/components/schemas/DocumentRenderingBucketResponse_signedUrls_inner'
+          type: array
+      type: object
+      x-konfig-is-used-in-successful-response: true
+    konfig-generated-schema-components-schemas-DocumentGeneratePdfFromBucketRequest-properties-title:
+      example: document
+      type: string
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-DocumentGeneratePdfFromBucketRequest-properties-test:
+      example: true
+      type: boolean
+      x-do-not-generate: true
+    konfig-generated-schema-components-schemas-DocumentGeneratePdfFromBucketRequest-properties-save:
+      example: false
+      type: boolean
+      x-do-not-generate: true
+    konfig-generated-schema-single-parameter-schema-post--api-docs-generate:
+      properties:
+        title:
+          default: document
+          description: "The title of the PDF, defaults to \"document\"."
+          example: document
+          type: string
+          x-konfig-original-example: document
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-DocumentGeneratePdfFromBucketRequest-properties-title
+        bucket:
+          description: The identifier of the bucket.
+          type: string
+        password:
+          description: The password of the bucket.
+          type: string
+        username:
+          description: The username of the bucket.
+          type: string
+        test:
+          default: true
+          description: "Whether or not to generate a test PDF, defaults to true."
+          example: true
+          type: boolean
+          x-konfig-original-example: true
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-DocumentGeneratePdfFromBucketRequest-properties-test
+        save:
+          default: false
+          description: "Whether or not to save the PDF to the bucket, defaults to\
+            \ false."
+          example: false
+          type: boolean
+          x-konfig-original-example: false
+          x-konfig-generated-schema: konfig-generated-schema-components-schemas-DocumentGeneratePdfFromBucketRequest-properties-save
+        expiresIn:
+          description: "The expiration time of the PDF in days, default is 1 day."
+          type: integer
+      type: object
+      x-do-not-generate: true
+      x-konfig-is-parameter: []
+    konfig-generated-schema-single-parameter-schema-post--api-docs-initiate:
+      properties:
+        assets:
+          description: Array of assets to generate signed URLs for.
+          items:
+            properties:
+              path:
+                description: Relative path where the asset will be stored in the bucket.
+                type: string
+              content: {}
+            type: object
+          type: array
+      type: object
+      x-do-not-generate: true
+      x-konfig-is-parameter: []
+    DocumentRenderingBucketRequest_assets_inner:
+      example:
+        path: path
+        content: ""
+      properties:
+        path:
+          description: Relative path where the asset will be stored in the bucket.
+          type: string
+        content: {}
+      type: object
+    DocumentRenderingBucketResponse_signedUrls_inner:
+      example:
+        path: path
+        signedUrl: signedUrl
+        token: token
+      properties:
+        path:
+          description: The relative path of the asset in the bucket.
+          type: string
+        token:
+          description: Access token for the signed Url.
+          type: string
+        signedUrl:
+          description: The signed URL to the bucket for the asset in path.
+          type: string
+      type: object
+  securitySchemes:
+    ApiKeyAuth:
+      in: header
+      name: x-api-key
+      type: apiKey
+      x-konfig-globally-required-security: true
+
